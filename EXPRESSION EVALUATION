@@ -1,0 +1,146 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 100
+
+struct Stack {
+    char data[MAX];
+    int top;
+};
+
+void initialize(struct Stack *s) {
+    s->top = -1;
+}
+
+void push(struct Stack *s, char value) {
+    if (s->top == MAX - 1) {
+        printf("Stack Overflow\n");
+        exit(1);
+    }
+    s->data[++(s->top)] = value;
+}
+
+char pop(struct Stack *s) {
+    if (s->top == -1) {
+        printf("Stack Underflow\n");
+        exit(1);
+    }
+    return s->data[(s->top)--];
+}
+
+int isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+int precedence(char c) {
+    if (c == '+' || c == '-')
+        return 1;
+    if (c == '*' || c == '/')
+        return 2;
+    return 0; // Lower precedence
+}
+
+void infixToPostfix(char infix[], char postfix[]) {
+    struct Stack s;
+    initialize(&s);
+    int infix_len = strlen(infix);
+    int postfix_index = 0;
+
+    for (int i = 0; i < infix_len; i++) {
+        char current = infix[i];
+
+        if (isalnum(current)) {
+            // Operand: Add to the postfix expression
+            postfix[postfix_index++] = current;
+        } else if (current == '(') {
+            // Left parenthesis: Push onto the stack
+            push(&s, current);
+        } else if (current == ')') {
+            // Right parenthesis: Pop operators and add to postfix until '(' is encountered
+            while (s.top >= 0 && s.data[s.top] != '(') {
+                postfix[postfix_index++] = pop(&s);
+            }
+            if (s.top >= 0 && s.data[s.top] == '(') {
+                pop(&s); // Pop and discard the '('
+            } else {
+                printf("Mismatched parentheses\n");
+                exit(1);
+            }
+        } else if (isOperator(current)) {
+            // Operator: Pop operators with higher or equal precedence and add to postfix
+            while (s.top >= 0 && s.data[s.top] != '(' && precedence(current) <= precedence(s.data[s.top])) {
+                postfix[postfix_index++] = pop(&s);
+            }
+            push(&s, current); // Push the current operator onto the stack
+        }
+    }
+
+    // Pop any remaining operators from the stack and add to postfix
+    while (s.top >= 0) {
+        if (s.data[s.top] == '(' || s.data[s.top] == ')') {
+            printf("Mismatched parentheses\n");
+            exit(1);
+        }
+        postfix[postfix_index++] = pop(&s);
+    }
+
+    // Null-terminate the postfix string
+    postfix[postfix_index] = '\0';
+}
+
+int evaluatePostfix(char postfix[]) {
+    struct Stack s;
+    initialize(&s);
+    int postfix_len = strlen(postfix);
+
+    for (int i = 0; i < postfix_len; i++) {
+        char current = postfix[i];
+
+        if (isdigit(current)) {
+            // Operand: Push onto the stack
+            push(&s, current - '0'); // Convert char to int
+        } else if (isOperator(current)) {
+            // Operator: Pop the top two operands, perform the operation, and push the result
+            int operand2 = pop(&s);
+            int operand1 = pop(&s);
+
+            switch (current) {
+                case '+':
+                    push(&s, operand1 + operand2);
+                    break;
+                case '-':
+                    push(&s, operand1 - operand2);
+                    break;
+                case '*':
+                    push(&s, operand1 * operand2);
+                    break;
+                case '/':
+                    if (operand2 == 0) {
+                        printf("Division by zero\n");
+                        exit(1);
+                    }
+                    push(&s, operand1 / operand2);
+                    break;
+            }
+        }
+    }
+
+    // The final result should be on the top of the stack
+    return pop(&s);
+}
+
+int main() {
+    char infix[MAX] = "5+7";
+    char postfix[MAX];
+    infixToPostfix(infix, postfix);
+
+    printf("Infix Expression: %s\n", infix);
+    printf("Postfix Expression: %s\n", postfix);
+
+    int result = evaluatePostfix(postfix);
+    printf("Output: %d\n", result);
+
+    return 0;
+}

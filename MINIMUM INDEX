@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+int sum_of_digits(int num) {
+    int sum = 0;
+
+    while (num > 0) {
+        int a = num % 10;
+        sum += a;
+        num -= a;
+        num /= 10;
+    }
+
+    return sum;
+}
+
+int main() {
+    int n, q;
+
+    scanf("%d %d", &n, &q);
+
+    int arr[n];
+    int sod[n];
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+        sod[i] = sum_of_digits(arr[i]);
+    }
+
+    for (int i = 0; i < q; i++) {
+        int query;
+        scanf("%d", &query);
+        int done = 0;
+
+        for (int j = query - 1; j < n; j++) {
+            if (sod[j] < sod[query - 1] && arr[j] > arr[query - 1]) {
+                done = 1;
+                printf("%d\n", j + 1);
+                break;
+            }
+        }
+
+        if (done == 0)
+            printf("-1\n");
+    }
+
+    return 0;
+}

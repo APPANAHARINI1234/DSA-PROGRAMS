@@ -1,0 +1,264 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node* next;
+};
+
+struct node* head = NULL;
+
+struct node* create() {
+    struct node* , * t;
+    int choice;
+    t = NULL;
+    printf("Enter choice(0 : stop and 1: continue) :\n");
+    scanf("%d", &choice);
+    while (choice) {
+        newnode = (struct node*)malloc(sizeof(struct node));
+        printf("Enter data:\n");
+        scanf("%d", &newnode->data);
+        if (head == NULL) {
+            head = newnode;
+            t = newnode;
+        }
+        else {
+            t->next = newnode;
+            t = newnode;
+        }
+        printf("Enter choice(0  :stop and 1: continue):\n");
+        scanf("%d", &choice);
+    }
+    return head;
+}
+
+void display(struct node* head) {
+    struct node* t;
+    t = head;
+    if (head == NULL) {
+        printf("List is empty\n");
+    }
+    else {
+        printf("List is not empty \n");
+        printf("Display:\n");
+        while (t->next != NULL) {
+            printf("%d ", t->data);
+            t = t->next;
+        }
+        printf("%d\n", t->data);
+    }
+}
+int count(struct node* head) {
+    struct node* t = head;
+    int c = 0;
+    while (t != NULL) {
+        c++;
+        t = t->next;
+    }
+    printf("Number of nodes are %d\n", c);
+    return c;
+}
+void insert_begin(struct node* head) {
+    struct node* newnode = (struct node*)malloc(sizeof(struct node));
+    printf("Enter data to insert:\n");
+    scanf("%d", &newnode->data);
+    newnode->next = NULL;
+    if (head == NULL) {
+        head = newnode;
+    }
+    else {
+        newnode->next = head;
+        head = newnode;
+    }
+    display(head);
+    printf("Number of nodes after operation:%d\n",count(head));
+}
+
+void insert_end(struct node* head) {
+    struct node* newnode = (struct node*)malloc(sizeof(struct node));
+    struct node* t = head;
+    printf("Enter data to insert:\n");
+    scanf("%d", &newnode->data);
+    newnode->next = NULL;
+    if (head == NULL) {
+        head = newnode;
+    }
+    else {
+        while (t->next != NULL) {
+            t = t->next;
+        }
+        t->next = newnode;
+    }
+    display(head);
+    printf("Number of nodes after operation:%d\n",count(head));
+}
+
+
+
+void insert_position(struct node* head) {
+    struct node* newnode = (struct node*)malloc(sizeof(struct node));
+    int pos;
+    printf("Enter the position (1-index):\n");
+    scanf("%d", &pos);
+    printf("Enter data to insert:\n");
+    scanf("%d", &newnode->data);
+    newnode->next = NULL;
+    int c = count(head);
+    if (pos > 0 && pos <= c + 1) {
+        if (head == NULL) {
+            head = newnode;
+            printf("List is empty\n");
+            printf("Insertion possible at first index\n");
+        }
+        else {
+            struct node* t, * tp;
+            t = head;
+            int i = 1;
+            while (i < pos - 1) {
+                t = t->next;
+                i++;
+            }
+            tp = t->next;
+            t->next = newnode;
+            newnode->next = tp;
+            display(head);
+            printf("Number of nodes after operation:%d\n",count(head));
+        }
+    }
+    else {
+        printf("No insertion possible\n");
+    }
+}
+
+void delete_begin(struct node* head) {
+    struct node* tp, * t;
+    t = head;
+    tp = head;
+    head = t->next;
+    free(tp);
+    display(head);
+    printf("Number of nodes after operation:%d\n",count(head));
+}
+
+void delete_end(struct node* head) {
+    struct node* t, * tp;
+    t = head;
+    if (head == NULL) {
+        printf("List is empty, deletion not possible\n");
+    }
+    else {
+        while (t->next->next != NULL) {
+            t = t->next;
+        }
+        tp = t->next;
+        t->next = NULL;
+        free(tp);
+        display(head);
+        printf("Number of nodes after operation:%d\n",count(head));
+    }
+}
+
+void delete_position(struct node* head) {
+    int pos;
+    struct node* t, * tp;
+    printf("Enter the position (1-index):\n");
+    scanf("%d", &pos);
+    int c = count(head);
+    if (pos > 0 && pos < c) {
+        t = head;
+        int i = 1;
+        while (i < pos - 1) {
+            t = t->next;
+            i++;
+        }
+        tp = t->next;
+        t->next = t->next->next;
+        free(tp);
+        display(head);
+printf("Number of nodes after operation:%d\n",count(head));
+    }
+    else {
+        printf("Invalid position, deletion not possible\n");
+    }
+}
+void reverse(struct node* head) {
+    struct node* prev = NULL;
+    struct node* current = head;
+    struct node* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;  
+        current->next = prev;
+        prev = current;  
+        current = next;   
+    }
+
+    head = prev;  
+
+    display(head);
+printf("Number of nodes after operation:%d\n",count(head));
+}
+
+
+void search(struct node* head) {
+    int target, flag = 0, c = 0;
+    printf("Enter search value:\n");
+    scanf("%d", &target);
+    struct node* t;
+    t = head;
+    while (t != NULL) {
+        c++;
+        if (t->data == target) {
+            flag++;
+            printf("Found at %d\n", c);
+        }
+        t = t->next;
+    }
+    if (flag == 0) {
+        printf("Not found\n");
+    }
+printf("Number of nodes after operation:%d\n",count(head));
+}
+
+int main() {
+    struct node* head = create();
+
+    printf("Select the given option:\n");
+    printf("Type 1: insert_begin\n");
+    printf("Type 2: insert_end\n");
+    printf("Type 3: insert_position\n");
+    printf("Type 4: delete_begin\n");
+    printf("Type 5: delete_last\n");
+    printf("Type 6: delete_position\n");
+    printf("Type 7: reverse\n");
+    printf("Type 8: search\n");
+    int x;
+    scanf("%d", &x);
+    switch (x) {
+        case 1:
+            insert_begin(head);
+            break;
+        case 2:
+            insert_end(head);
+            break;
+        case 3:
+            insert_position(head);
+            break;
+        case 4:
+            delete_begin(head);
+            break;
+        case 5:
+            delete_end(head);
+            break;
+        case 6:
+            delete_position(head);
+            break;
+        case 7:
+               reverse(head);
+        case 8:
+            search(head);
+            break;
+    }
+
+    return 0;
+}

@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+#define MAX 2000000
+typedef long long ll;
+
+int main() {
+    ll n, k;
+    scanf("%lld %lld", &n, &k);
+    ll arr[n + 1];
+
+    for (int i = 0; i < n; i++) {
+        scanf("%lld", &arr[i]);
+    }
+
+    ll prefix[n + 1];
+    prefix[0] = arr[0];
+
+    for (int i = 1; i < n; i++) {
+        prefix[i] = prefix[i - 1] + arr[i];
+    }
+
+    ll ans = 0;
+
+    for (int i = 0; i < k; i++) {
+        ll temp = prefix[i] + prefix[n - 1] - prefix[n - k + i];
+        ans = (ans > temp) ? ans : temp;
+    }
+
+    printf("%lld", ans);
+
+    return 0;
+}
